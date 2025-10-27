@@ -1,6 +1,19 @@
 import { REGISTRIES, Registry } from "./registry-constants";
 import { sanitizeResponse, sanitizeInput } from "../utils/sanitizer";
 
+export interface PackageInfo {
+  name?: string;
+  version?: string;
+  description?: string;
+  author?: string;
+  maintainer?: string;
+  license?: string;
+  lastUpdated?: string;
+  publishDate?: string;
+  tags?: string[];
+  dependencies?: Record<string, string>;
+}
+
 export interface RegistryStatus {
   registry: Registry;
   packageName: string;
@@ -9,6 +22,7 @@ export interface RegistryStatus {
   details?: object;
   error?: string;
   packageUrl?: string; // URL to the package page if it exists
+  packageInfo?: PackageInfo; // Additional information about the package if it exists
 }
 
 export interface CheckOptions {
@@ -99,6 +113,16 @@ export const getRegistryStatus = async (
       packageUrl = registry.packageUrl(sanitizedPackageName);
     }
 
+    // Extract package info if the package exists
+    let packageInfo: PackageInfo | undefined;
+    if (status === "taken" && details) {
+      packageInfo = extractPackageInfo(
+        details,
+        registry.id,
+        sanitizedPackageName,
+      );
+    }
+
     return {
       registry,
       packageName,
@@ -107,6 +131,7 @@ export const getRegistryStatus = async (
       details,
       error: status === "error" ? `HTTP ${response.status}` : undefined,
       packageUrl,
+      packageInfo,
     };
   } catch (error) {
     // Handle network errors, timeouts, CORS issues, etc.
@@ -145,6 +170,108 @@ export const checkPackageName = async (
   );
 
   return results;
+};
+
+// Function to extract package information based on the registry
+const extractPackageInfo = (
+  details: unknown,
+  registryId: string,
+  packageName: string,
+): PackageInfo => {
+  const packageInfo: PackageInfo = {
+    name: packageName,
+  };
+
+  if (typeof details !== "object" || details === null) {
+    return packageInfo;
+  }
+
+  switch (registryId) {
+    case "npm": {
+      // NPM package information extraction
+      const npmDetails = details as {
+        "dist-tags"?: { latest?: string };
+        versions?: Record<string, any>;
+        time?: Record<string, string>;
+      };
+
+      if (npmDetails) {
+        const latestVersion = npmDetails["dist-tags"]?.latest;
+        const versionData = npmDetails.versions?.[latestVersion];
+
+        if (versionData) {
+          packageInfo.version = latestVersion;
+          packageInfo.description = versionData.description;
+          packageInfo.author = versionData.author?.name || versionData.author;
+          packageInfo.license = versionData.license;
+          packageInfo.lastUpdated = npmDetails.time?.[latestVersion];
+          packageInfo.publishDate = npmDetails.time?.created;
+          packageInfo.tags = Object.keys(npmDetails["dist-tags"] || {});
+          packageInfo.dependencies = versionData.dependencies || {};
+        }
+      }
+      break;
+    }
+
+    case "pypi": {
+      // PyPI package information extraction
+      const pypiDetails = details as {
+        info?: {
+          version?: string;
+          summary?: string;
+          author?: string;
+          maintainer?: string;
+          license?: string;
+          updated?: string;
+          upload_time?: string;
+          keywords?: string;
+        };
+      };
+
+      if (pypiDetails.info) {
+        const info = pypiDetails.info;
+        packageInfo.version = info.version;
+        packageInfo.description = info.summary;
+        packageInfo.author = info.author;
+        packageInfo.maintainer = info.maintainer;
+        packageInfo.license = info.license;
+        packageInfo.lastUpdated = info.updated;
+        packageInfo.publishDate = info.upload_time;
+        packageInfo.tags = info.keywords?.split(",") || [];
+      }
+      break;
+    }
+
+    case "cargo": {
+      // Cargo package information extraction
+      const cargoDetails = details as {
+        crate?: {
+          description?: string;
+          owner_names?: string[];
+          updated_at?: string;
+          created_at?: string;
+          keywords?: string[];
+        };
+        newest_version?: string;
+      };
+
+      if (cargoDetails.crate) {
+        const crate = cargoDetails.crate;
+        packageInfo.version = cargoDetails?.newest_version;
+        packageInfo.description = crate.description;
+        packageInfo.author = crate.owner_names?.join(", ");
+        packageInfo.lastUpdated = crate.updated_at;
+        packageInfo.publishDate = crate.created_at;
+        packageInfo.tags = crate.keywords;
+      }
+      break;
+    }
+
+    default:
+      break;
+  }
+
+  return packageInfo;
 };
 
 // Enhanced function to track success metrics (for SC-003)

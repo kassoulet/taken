@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import StatusBadge from "../StatusBadge/StatusBadge";
+import PackageDetails from "../PackageDetails/PackageDetails";
 import { RegistryStatus } from "../../services/registry-checker";
 
 interface RegistryStatusGridProps {
@@ -17,6 +18,8 @@ const RegistryStatusGrid: React.FC<RegistryStatusGridProps> = ({
   error,
   onRetry,
 }) => {
+  const [expandedRegistry, setExpandedRegistry] = useState<string | null>(null);
+
   // If loading and no statuses yet, show loading placeholders
   if (loading && registryStatuses.length === 0) {
     return (
@@ -59,6 +62,10 @@ const RegistryStatusGrid: React.FC<RegistryStatusGridProps> = ({
     );
   }
 
+  const toggleExpand = (registryId: string) => {
+    setExpandedRegistry(expandedRegistry === registryId ? null : registryId);
+  };
+
   return (
     <div className="w-full max-w-4xl mx-auto">
       <h2 className="text-xl font-semibold text-center mb-6 font-body text-gray-900 dark:text-gray-100">
@@ -89,16 +96,37 @@ const RegistryStatusGrid: React.FC<RegistryStatusGridProps> = ({
         aria-label="Registry status results"
       >
         {registryStatuses.map((statusObj, index) => {
+          const isExpanded = expandedRegistry === statusObj.registry.id;
+          const hasPackageInfo =
+            statusObj.status === "taken" && statusObj.packageInfo;
+
           return (
             <div key={`${statusObj.registry.id}-${index}`} role="listitem">
-              <StatusBadge
-                status={statusObj.status}
-                registryName={statusObj.registry.name}
-                loading={loading}
-                accessibilityLabel={`${statusObj.registry.name} registry status is ${statusObj.status}`}
-                registryIcon={statusObj.registry.icon}
-                packageUrl={statusObj.packageUrl}
-              />
+              <div
+                onClick={() =>
+                  hasPackageInfo && toggleExpand(statusObj.registry.id)
+                }
+                className={hasPackageInfo ? "cursor-pointer" : ""}
+              >
+                <StatusBadge
+                  status={statusObj.status}
+                  registryName={statusObj.registry.name}
+                  loading={loading}
+                  accessibilityLabel={`${statusObj.registry.name} registry status is ${statusObj.status}`}
+                  registryIcon={statusObj.registry.icon}
+                  packageUrl={statusObj.packageUrl}
+                />
+              </div>
+
+              {isExpanded && hasPackageInfo && statusObj.packageInfo && (
+                <div className="mt-2">
+                  <PackageDetails
+                    packageInfo={statusObj.packageInfo}
+                    registryName={statusObj.registry.name}
+                    packageName={statusObj.packageName}
+                  />
+                </div>
+              )}
             </div>
           );
         })}
