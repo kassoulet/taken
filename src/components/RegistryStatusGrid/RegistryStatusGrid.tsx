@@ -1,6 +1,6 @@
-import React from 'react';
-import StatusBadge from '../StatusBadge/StatusBadge';
-import { RegistryStatus } from '../../services/registry-checker';
+import React from "react";
+import StatusBadge from "../StatusBadge/StatusBadge";
+import { RegistryStatus } from "../../services/registry-checker";
 
 interface RegistryStatusGridProps {
   packageName: string;
@@ -17,21 +17,20 @@ const RegistryStatusGrid: React.FC<RegistryStatusGridProps> = ({
   error,
   onRetry,
 }) => {
-
-
   // If loading and no statuses yet, show loading placeholders
   if (loading && registryStatuses.length === 0) {
     return (
       <div className="w-full max-w-4xl mx-auto">
         <h2 className="text-xl font-semibold text-center mb-6 font-body text-gray-900 dark:text-gray-100">
-          Checking registries for: <span className="font-mono">{packageName}</span>
+          Checking registries for:{" "}
+          <span className="font-mono">{packageName}</span>
         </h2>
         <div
           className="grid grid-cols-2 md:grid-cols-3 gap-4"
           role="list"
           aria-label="Registry status loading placeholders"
         >
-          {['npm', 'PyPI', 'Cargo'].map((registryName, index) => (
+          {["npm", "PyPI", "Cargo"].map((registryName, index) => (
             <div
               key={index}
               className="flex flex-col items-center justify-center p-4 rounded-lg border bg-gray-50 dark:bg-gray-800 dark:border-gray-700 min-w-[120px] transition-colors duration-300"
@@ -46,8 +45,12 @@ const RegistryStatusGrid: React.FC<RegistryStatusGridProps> = ({
                 <span className="sr-only">Loading...</span>
               </div>
               <div className="text-sm font-medium text-center font-body">
-                <div className="font-semibold text-gray-900 dark:text-gray-100">{registryName}</div>
-                <div className="text-gray-700 dark:text-gray-300">Checking...</div>
+                <div className="font-semibold text-gray-900 dark:text-gray-100">
+                  {registryName}
+                </div>
+                <div className="text-gray-700 dark:text-gray-300">
+                  Checking...
+                </div>
               </div>
             </div>
           ))}
@@ -93,6 +96,8 @@ const RegistryStatusGrid: React.FC<RegistryStatusGridProps> = ({
                 registryName={statusObj.registry.name}
                 loading={loading}
                 accessibilityLabel={`${statusObj.registry.name} registry status is ${statusObj.status}`}
+                registryIcon={statusObj.registry.icon}
+                packageUrl={statusObj.packageUrl}
               />
             </div>
           );

@@ -1,13 +1,14 @@
-import { REGISTRIES, Registry } from './registry-constants';
-import { sanitizeResponse, sanitizeInput } from '../utils/sanitizer';
+import { REGISTRIES, Registry } from "./registry-constants";
+import { sanitizeResponse, sanitizeInput } from "../utils/sanitizer";
 
 export interface RegistryStatus {
   registry: Registry;
   packageName: string;
-  status: 'available' | 'taken' | 'error';
+  status: "available" | "taken" | "error";
   timestamp: string;
   details?: object;
   error?: string;
+  packageUrl?: string; // URL to the package page if it exists
 }
 
 export interface CheckOptions {
@@ -19,13 +20,16 @@ export interface CheckOptions {
 const fetchWithTimeout = async (
   url: string,
   options: RequestInit = {},
-  timeout: number
+  timeout: number,
 ): Promise<Response> => {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
 
   try {
-    const response = await fetch(url, { ...options, signal: controller.signal });
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
     clearTimeout(id);
     return response;
   } catch (error) {
@@ -38,22 +42,22 @@ const fetchWithTimeout = async (
 export const getRegistryStatus = async (
   registry: Registry,
   packageName: string,
-  timeout: number = 10000 // 10 seconds default
+  timeout: number = 10000, // 10 seconds default
 ): Promise<RegistryStatus> => {
   try {
     // Sanitize the package name before using in the API request
     const sanitizedPackageName = sanitizeInput(packageName);
 
     // Construct the API URL based on the registry
-    let apiUrl = '';
+    let apiUrl = "";
     switch (registry.id) {
-      case 'npm':
+      case "npm":
         apiUrl = `${registry.apiEndpoint}${sanitizedPackageName}`;
         break;
-      case 'pypi':
+      case "pypi":
         apiUrl = `${registry.apiEndpoint}${sanitizedPackageName}/json`;
         break;
-      case 'cargo':
+      case "cargo":
         apiUrl = `${registry.apiEndpoint}${sanitizedPackageName}`;
         break;
       default:
@@ -65,13 +69,13 @@ export const getRegistryStatus = async (
 
     // Determine status based on response - need to clone response to access status
     // even when the body may have been read already
-    let status: 'available' | 'taken' | 'error';
+    let status: "available" | "taken" | "error";
     if (response.ok) {
-      status = 'taken'; // 200 means the package exists
+      status = "taken"; // 200 means the package exists
     } else if (response.status === 404) {
-      status = 'available'; // 404 means the package doesn't exist
+      status = "available"; // 404 means the package doesn't exist
     } else {
-      status = 'error'; // Other errors
+      status = "error"; // Other errors
     }
 
     // Sanitize response data before processing
@@ -83,10 +87,16 @@ export const getRegistryStatus = async (
         const clonedResponse = response.clone();
         const rawData = await clonedResponse.json();
         details = sanitizeResponse(rawData);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (e: unknown) {
         // If JSON parsing fails, we still have the status
       }
+    }
+
+    // Generate package URL if the package exists and the registry has packageUrl function
+    let packageUrl: string | undefined;
+    if (status === "taken" && registry.packageUrl) {
+      packageUrl = registry.packageUrl(sanitizedPackageName);
     }
 
     return {
@@ -95,15 +105,17 @@ export const getRegistryStatus = async (
       status,
       timestamp: new Date().toISOString(),
       details,
-      error: status === 'error' ? `HTTP ${response.status}` : undefined,
+      error: status === "error" ? `HTTP ${response.status}` : undefined,
+      packageUrl,
     };
   } catch (error) {
     // Handle network errors, timeouts, CORS issues, etc.
-    const errorMessage = error instanceof Error ? error.message : 'Network error occurred';
+    const errorMessage =
+      error instanceof Error ? error.message : "Network error occurred";
     return {
       registry,
       packageName,
-      status: 'error',
+      status: "error",
       timestamp: new Date().toISOString(),
       error: errorMessage,
     };
@@ -113,16 +125,23 @@ export const getRegistryStatus = async (
 // Check package name across multiple registries
 export const checkPackageName = async (
   packageName: string,
-  options: CheckOptions = {}
+  options: CheckOptions = {},
 ): Promise<RegistryStatus[]> => {
-  const { timeout = 10000, registries: registryIds = REGISTRIES.map(r => r.id) } = options;
+  const {
+    timeout = 10000,
+    registries: registryIds = REGISTRIES.map((r) => r.id),
+  } = options;
 
   // Filter registries based on the provided IDs
-  const targetRegistries = REGISTRIES.filter(registry => registryIds.includes(registry.id));
+  const targetRegistries = REGISTRIES.filter((registry) =>
+    registryIds.includes(registry.id),
+  );
 
   // Check each registry in parallel
   const results = await Promise.all(
-    targetRegistries.map(registry => getRegistryStatus(registry, packageName, timeout))
+    targetRegistries.map((registry) =>
+      getRegistryStatus(registry, packageName, timeout),
+    ),
   );
 
   return results;
@@ -131,16 +150,17 @@ export const checkPackageName = async (
 // Enhanced function to track success metrics (for SC-003)
 export const checkPackageNameWithMetrics = async (
   packageName: string,
-  options: CheckOptions = {}
+  options: CheckOptions = {},
 ): Promise<{ results: RegistryStatus[]; successRate: number }> => {
   const results = await checkPackageName(packageName, options);
 
   // Calculate metrics
   const totalChecks = results.length;
   const definitiveResults = results.filter(
-    r => r.status === 'available' || r.status === 'taken'
+    (r) => r.status === "available" || r.status === "taken",
   ).length;
-  const successRate = totalChecks > 0 ? (definitiveResults / totalChecks) * 100 : 0;
+  const successRate =
+    totalChecks > 0 ? (definitiveResults / totalChecks) * 100 : 0;
 
   return {
     results,
