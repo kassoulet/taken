@@ -101,13 +101,27 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({
 
   // Create the badge content
   const badgeContent = (
-    <div
-      className="flex flex-col items-center justify-center"
-      aria-label={
-        accessibilityLabel || `${registryName} registry status is ${label}`
-      }
-    >
-      <div className="flex items-center justify-center mb-2" aria-hidden="true">
+    <div className="relative flex flex-col items-center justify-center h-full w-full p-4">
+      {/* Background icon */}
+      {registryIcon && !loading && (
+        <div className="absolute inset-0 flex items-center justify-center opacity-10">
+          <img
+            src={registryIcon}
+            alt={`${registryName} icon`}
+            className="w-16 h-16 object-contain"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              // Hide the image if it fails to load
+              target.style.display = "none";
+            }}
+          />
+        </div>
+      )}
+
+      <div
+        className="flex items-center justify-center mb-2 relative z-10"
+        aria-hidden="true"
+      >
         {loading ? (
           <div
             className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-900 dark:border-gray-100"
@@ -115,32 +129,12 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({
           >
             <span className="sr-only">Loading...</span>
           </div>
-        ) : registryIcon ? (
-          <img
-            src={registryIcon}
-            alt={`${registryName} icon`}
-            className="w-5 h-5"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              // If the image fails to load, hide it and show the fallback icon
-              target.style.display = "none";
-              const fallbackElement =
-                target.parentElement?.querySelector(".fallback-icon");
-              if (fallbackElement) {
-                (fallbackElement as HTMLElement).style.display = "block";
-              }
-            }}
-          />
-        ) : null}
-        {/* Fallback icon when image fails to load */}
-        <div className="fallback-icon" style={{ display: "none" }}>
-          {icon}
-        </div>
-        {/* Icon for when no registryIcon is available */}
-        {!registryIcon && !loading && <div>{icon}</div>}
+        ) : (
+          <div className="z-20">{icon}</div>
+        )}
       </div>
-      <div className="text-sm font-medium text-center">
-        <div className={`${text} font-semibold`}>{registryName}</div>
+      <div className="text-sm font-medium text-center relative z-10">
+        <div className={`font-semibold ${text}`}>{registryName}</div>
         <div className={text}>{loading ? "Checking..." : label}</div>
       </div>
     </div>
@@ -153,7 +147,7 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({
         href={packageUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className={`flex flex-col items-center justify-center p-4 rounded-lg border ${container} min-w-[120px] focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 font-body transition-colors duration-300 hover:opacity-90`}
+        className={`relative flex flex-col items-center justify-center rounded-lg border ${container} min-w-[120px] focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 font-body transition-colors duration-300 hover:opacity-90`}
         aria-label={`Link to ${registryName} package page`}
       >
         {badgeContent}
@@ -162,7 +156,7 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({
   } else {
     return (
       <div
-        className={`flex flex-col items-center justify-center p-4 rounded-lg border ${container} min-w-[120px] focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 font-body transition-colors duration-300`}
+        className={`relative flex flex-col items-center justify-center rounded-lg border ${container} min-w-[120px] focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 font-body transition-colors duration-300`}
         role="status"
         tabIndex={0}
         aria-label={
