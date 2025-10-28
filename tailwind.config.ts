@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss";
 
-export default {
+const config: Config = {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   darkMode: "class", // or 'media' if you want it to follow system preferences automatically
   theme: {
@@ -12,4 +12,6 @@ export default {
     },
   },
   plugins: [],
-} satisfies Config;
+};
+
+export default config;

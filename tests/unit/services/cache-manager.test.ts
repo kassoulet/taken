@@ -13,10 +13,10 @@ describe("cache-manager", () => {
     it("should cache a result with the correct key format", () => {
       const mockResult = [
         {
-          registry: { 
+          registry: {
             id: "npm",
-            name: "npm", 
-            apiEndpoint: "https://registry.npmjs.org/"
+            name: "npm",
+            apiEndpoint: "https://registry.npmjs.org/",
           },
           packageName: "test-package",
           status: "available" as const,

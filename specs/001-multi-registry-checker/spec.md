@@ -1,8 +1,8 @@
 # Feature Specification: Multi-Registry Package Name Checker
 
-**Feature Branch**: `001-multi-registry-checker`  
-**Created**: Saturday, October 25, 2025  
-**Status**: Draft  
+**Feature Branch**: `001-multi-registry-checker`
+**Created**: Saturday, October 25, 2025
+**Status**: Draft
 **Input**: User description: "'Taken', a web app that checks if a given package name is available across multiple open-source package registries — no backend required."
 
 ## User Scenarios & Testing _(mandatory)_

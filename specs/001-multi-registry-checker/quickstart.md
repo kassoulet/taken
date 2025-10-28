@@ -31,6 +31,7 @@
    ```
 
 4. **Configure TailwindCSS**
+
    - Update `tailwind.config.js`:
 
    ```js

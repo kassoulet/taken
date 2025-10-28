@@ -70,7 +70,10 @@ describe("registry-checker", () => {
     it("should handle timeout correctly", async () => {
       mockFetch.mockImplementationOnce(() => {
         return new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('The operation was aborted.')), 100);
+          setTimeout(
+            () => reject(new Error("The operation was aborted.")),
+            100,
+          );
         });
       });
 
@@ -90,12 +93,11 @@ describe("registry-checker", () => {
 
   describe("checkPackageName", () => {
     it("should check all registries and return results", async () => {
-      mockFetch
-        .mockResolvedValue({
-          ok: true,
-          status: 200,
-          json: async () => ({ name: "existing-package" }),
-        } as Response);
+      mockFetch.mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({ name: "existing-package" }),
+      } as Response);
 
       const results = await checkPackageName("test-package");
 

@@ -228,8 +228,8 @@ const extractPackageInfo = (
             "name" in versionData.author
               ? (versionData.author as { name?: string }).name
               : typeof versionData.author === "string"
-                ? versionData.author
-                : undefined;
+              ? versionData.author
+              : undefined;
           packageInfo.license = versionData.license;
           packageInfo.lastUpdated =
             latestVersion && npmDetails.time

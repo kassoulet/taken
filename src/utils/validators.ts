@@ -28,7 +28,11 @@ export const validateNpmPackageName = (packageName: string): boolean => {
   }
 
   // Regular package name validation
-  if (packageName.startsWith(".") || packageName.startsWith("_") || /^\d/.test(packageName)) {
+  if (
+    packageName.startsWith(".") ||
+    packageName.startsWith("_") ||
+    /^\d/.test(packageName)
+  ) {
     return false;
   }
 

@@ -128,14 +128,14 @@ function App() {
           </div>
         )}
       </div>
-      
+
       {/* Footer with credits */}
       <footer className="py-6 text-center text-gray-600 dark:text-gray-400 text-sm">
         <p>
           Created by{" "}
-          <a 
-            href="https://github.com/kassoulet/taken" 
-            target="_blank" 
+          <a
+            href="https://github.com/kassoulet/taken"
+            target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 dark:text-blue-400 hover:underline"
           >

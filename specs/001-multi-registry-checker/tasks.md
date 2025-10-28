@@ -1,7 +1,7 @@
 # Tasks: Multi-Registry Package Name Checker
 
-**Feature**: Multi-Registry Package Name Checker  
-**Generated**: Saturday, October 25, 2025  
+**Feature**: Multi-Registry Package Name Checker
+**Generated**: Saturday, October 25, 2025
 **Branch**: 001-multi-registry-checker
 
 ## Overview

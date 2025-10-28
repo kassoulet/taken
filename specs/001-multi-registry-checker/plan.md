@@ -11,14 +11,14 @@ A frontend-only web application that checks package name availability across mul
 
 ## Technical Context
 
-**Language/Version**: JavaScript/TypeScript for frontend implementation with HTML/CSS for UI  
-**Primary Dependencies**: React 18+ for component architecture (per constitution), Vite 5+ for bundling (per constitution), TailwindCSS 3+ for styling (per constitution)  
-**Storage**: Browser sessionStorage for caching query results during the session (per spec clarification)  
-**Testing**: Jest + React Testing Library for testing framework (per constitution)  
-**Target Platform**: Modern web browsers (Chrome 70+, Firefox 60+, Safari 13+, Edge 79+)  
-**Project Type**: Single-page web application (frontend only)  
-**Performance Goals**: Results displayed within 5 seconds under normal network conditions (per spec SC-001), 90% of repeat queries served from cache (per spec SC-004), interaction response under 100ms (per constitution)  
-**Constraints**: All processing must be client-side only (no backend), must handle CORS restrictions, must work offline after initial load, input sanitization required (per clarifications and constitution)  
+**Language/Version**: JavaScript/TypeScript for frontend implementation with HTML/CSS for UI
+**Primary Dependencies**: React 18+ for component architecture (per constitution), Vite 5+ for bundling (per constitution), TailwindCSS 3+ for styling (per constitution)
+**Storage**: Browser sessionStorage for caching query results during the session (per spec clarification)
+**Testing**: Jest + React Testing Library for testing framework (per constitution)
+**Target Platform**: Modern web browsers (Chrome 70+, Firefox 60+, Safari 13+, Edge 79+)
+**Project Type**: Single-page web application (frontend only)
+**Performance Goals**: Results displayed within 5 seconds under normal network conditions (per spec SC-001), 90% of repeat queries served from cache (per spec SC-004), interaction response under 100ms (per constitution)
+**Constraints**: All processing must be client-side only (no backend), must handle CORS restrictions, must work offline after initial load, input sanitization required (per clarifications and constitution)
 **Scale/Scope**: Supports 3 major registries (npm, PyPI, Cargo), handles concurrent API calls, mobile-responsive UI (per spec FR-009)
 
 ## Constitution Check
