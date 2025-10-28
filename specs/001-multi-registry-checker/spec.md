@@ -5,7 +5,7 @@
 **Status**: Draft  
 **Input**: User description: "'Taken', a web app that checks if a given package name is available across multiple open-source package registries — no backend required."
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Check Package Name Availability (Priority: P1)
 
@@ -57,7 +57,7 @@ A user repeatedly checks the same package names over time. The application cache
 - What occurs when access is blocked to certain registries?
 - How does the system handle timeout responses?
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
@@ -66,7 +66,7 @@ A user repeatedly checks the same package names over time. The application cache
 - **FR-003**: System MUST show whether each registry status is "available", "taken", or "error"
 - **FR-004**: System MUST handle all logic client-side
 - **FR-005**: System MUST debounce user input to avoid excessive requests
-- **FR-006**: System MUST cache recent queries to avoid re-fetching 
+- **FR-006**: System MUST cache recent queries to avoid re-fetching
 - **FR-007**: System MUST treat successful responses as "taken", "not found" responses as "available", and other responses as "error"
 - **FR-008**: System MUST display registry status using clear visual indicators (badges, colors)
 - **FR-009**: System MUST provide a responsive UI that works across different screen sizes
@@ -75,14 +75,14 @@ A user repeatedly checks the same package names over time. The application cache
 - **FR-012**: System MUST clear cached data after a specified time period
 - **FR-013**: System MUST validate package name format per each registry's specific rules
 
-### Key Entities *(include if feature involves data)*
+### Key Entities _(include if feature involves data)_
 
 - **PackageName**: The identifier entered by the user to check across registries
 - **RegistryStatus**: The result for a specific package name on a specific registry, with possible values: "available", "taken", or "error"
 - **Registry**: An external package registry (npm, PyPI, Cargo) that supports the package name lookup
 - **CachedQuery**: A stored result from a previous query with timestamp for expiration tracking
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 

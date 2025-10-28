@@ -1,34 +1,35 @@
 # Project Summary
 
 ## Overall Goal
-
-Create a multi-registry checker tool that allows users to verify if a Docker image exists across different registries and provides information about the image, implemented as a frontend-only React application.
+Create a multi-registry package name checker web application that allows users to check if a package name is available across multiple registries (npm, PyPI, Cargo) with a clean UI and no backend dependencies.
 
 ## Key Knowledge
-
-- **Technology Stack**: JavaScript/TypeScript frontend with React 18+, Vite 5+ bundling, TailwindCSS 3+ styling
-- **Architecture**: No backend dependencies, uses browser sessionStorage for caching query results during the session
-- **Project Structure**: Standard Vite/React frontend with backend/, frontend/, and tests/ directories
-- **Build Commands**: `npm run test && npm run lint` for running tests and linting
-- **Code Style**: Follow standard JavaScript/TypeScript conventions with HTML/CSS for UI
+- Technology Stack: JavaScript/TypeScript, React 18+, Vite 5+, TailwindCSS 3+, with browser sessionStorage for caching
+- Architecture: Client-side only application with component-first architecture
+- Project Structure: frontend code in root directory with src/, components/, services/, hooks/, utils/ directories
+- Build Commands: `npm run test && npm run lint` for testing and linting
+- Testing: Uses Jest, React Testing Library, Playwright for e2e tests
+- The application features real-time input validation, debouncing, parallel registry checking, and caching
+- Dark mode is supported and respects system preference
+- Package name validation per registry-specific rules with comprehensive input sanitization
 
 ## Recent Actions
-
-- Established project context and development guidelines from QWEN.md
-- Attempted to run `npm test` but the command was cancelled by the user
-- No specific development work has been completed yet on the multi-registry checker feature
+- Successfully added credits footer at the bottom of the page for Gautier Portet with GitHub URL
+- Created comprehensive README.md file with project details, usage instructions, and development guidelines
+- Added new test setup file (tests/setup.ts) and vitest config (vitest.config.ts)
+- Fixed TypeScript linting issues by updating `@ts-ignore` to `@ts-expect-error` with proper description
+- Successfully committed all changes with the message "Add credits footer and README, update specs"
+- The footer includes a link to Gautier Portet's GitHub profile as requested
 
 ## Current Plan
-
-- [TODO] Set up the basic React application structure
-- [TODO] Implement the multi-registry checker UI components
-- [TODO] Add functionality to check Docker image existence across registries
-- [TODO] Implement session-based caching using sessionStorage
-- [TODO] Create tests for the application functionality
-- [TODO] Run linting and testing to ensure code quality
+- [DONE] Add credits footer to the application
+- [DONE] Create README.md file with project documentation
+- [DONE] Commit all changes to Git repository
+- [DONE] Fix linting issues and ensure proper TypeScript annotations
+- [TODO] Run full test suite to ensure all functionality works as expected
+- [TODO] Verify that the footer displays correctly across different screen sizes and in both light/dark modes
 
 ---
 
 ## Summary Metadata
-
-**Update time**: 2025-10-27T20:51:53.198Z
+**Update time**: 2025-10-28T16:11:03.974Z 

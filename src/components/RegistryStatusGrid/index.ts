@@ -1,1 +1,1 @@
-export { default } from './RegistryStatusGrid';
+export { default } from "./RegistryStatusGrid";

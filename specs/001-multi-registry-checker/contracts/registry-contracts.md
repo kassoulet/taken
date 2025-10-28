@@ -9,6 +9,7 @@
 **Description**: Checks the availability of a package name across multiple registries
 
 **Parameters**:
+
 - packageName (string): The validated and sanitized package name to check across registries
 - options (object, optional):
   - timeout (number): Timeout for each registry request in milliseconds (default: 10000 per clarification)
@@ -17,6 +18,7 @@
 **Returns**: Promise<RegistryStatus[]>
 
 **Response Format**:
+
 ```javascript
 [
   {
@@ -35,6 +37,7 @@
 ```
 
 **Error Handling**:
+
 - Network errors: Mapped to 'error' status
 - Timeout errors: Mapped to 'error' status (per 10-second timeout clarification)
 - CORS errors: Mapped to 'error' status with details (per clarification Q2: treat all errors the same)
@@ -45,12 +48,14 @@
 **Description**: Validates a package name according to each registry's specific rules
 
 **Parameters**:
+
 - packageName (string): The package name to validate
 - registryId? (string): Optional specific registry ID to validate against
 
 **Returns**: ValidationResult | RegistryValidationMap
 
 **Response Format**:
+
 ```javascript
 // For specific registry validation:
 {
@@ -81,11 +86,13 @@
 **Description**: Retrieves a cached result for a package name if it exists in sessionStorage
 
 **Parameters**:
+
 - packageName (string): The package name to check in cache
 
 **Returns**: Promise<RegistryStatus[] | null>
 
 **Response Format**:
+
 - Returns the same as checkPackageName if found in cache
 - Returns null if not found in cache
 
@@ -94,6 +101,7 @@
 **Description**: Caches a result in sessionStorage for future use
 
 **Parameters**:
+
 - packageName (string): The package name that was checked
 - results (RegistryStatus[]): The results to cache
 
@@ -112,6 +120,7 @@
 ### NameInput Component
 
 **Props Interface**:
+
 ```javascript
 {
   onValidate: (packageName: string, isValid: boolean) => void,  // Callback when validation status changes
@@ -124,6 +133,7 @@
 ```
 
 **State**:
+
 - value: string - Current input value (filtered in real-time per clarification)
 - isValid: boolean - Whether the current value is valid
 - error: string | null - Error message if validation fails
@@ -132,6 +142,7 @@
 ### RegistryStatusGrid Component
 
 **Props Interface**:
+
 ```javascript
 {
   packageName: string,          // The package name being checked
@@ -145,6 +156,7 @@
 ### StatusBadge Component
 
 **Props Interface**:
+
 ```javascript
 {
   status: 'available' | 'taken' | 'error',  // Status to display
@@ -157,6 +169,7 @@
 ## HTTP API Contracts (External Registries)
 
 ### npm Registry API
+
 - **Endpoint**: `GET https://registry.npmjs.org/{sanitizedPackageName}`
 - **Response**: 200 with package data if exists, 404 if not
 - **Headers**: Accept: application/json
@@ -164,18 +177,21 @@
 - **Security**: Input must be sanitized before request (per clarification Q7)
 
 ### PyPI Registry API
+
 - **Endpoint**: `GET https://pypi.org/pypi/{sanitizedPackageName}/json`
 - **Response**: 200 with package data if exists, 404 if not
 - **Headers**: Accept: application/json
 - **Security**: Input must be sanitized before request (per clarification Q7)
 
 ### Cargo Registry API
+
 - **Endpoint**: `GET https://crates.io/api/v1/crates/{sanitizedPackageName}`
 - **Response**: 200 with crate data if exists, 404 if not
 - **Headers**: Accept: application/json
 - **Security**: Input must be sanitized before request (per clarification Q7)
 
 ### GitHub API (Repository-focused per clarification Q11)
+
 - **Endpoint**: `GET https://api.github.com/repos/{sanitizedOwner}/{sanitizedRepo}`
 - **Response**: 200 with repo data if exists, 404 if not
 - **Headers**: Accept: application/vnd.github.v3+json
@@ -185,11 +201,13 @@
 ## Browser Storage Contract
 
 ### sessionStorage Keys
+
 - Format: `registry-check-{registryId}-{packageName}` (per spec and clarifications)
 - Value: JSON string of RegistryStatus[]
 - Lifecycle: Automatic cleanup when browser session ends (per clarification Q10)
 
 ### Session Storage Limits
+
 - Per origin: ~5-10MB depending on browser
 - Automatic cleanup when browser tab closes
 - No cross-tab sharing (as designed for this feature)
@@ -197,12 +215,14 @@
 ## Security Contract
 
 ### Input Sanitization
+
 - All user input must be sanitized before API requests
 - Use DOMPurify or similar library for comprehensive sanitization (per clarification Q7)
 - Prevent XSS and injection attacks
 - Sanitize both before API requests and before display
 
 ### Client-Side Security
+
 - No sensitive data stored client-side
 - All processing happens in browser
 - Proper headers and validation for external API calls
@@ -211,12 +231,14 @@
 ## Accessibility Contract
 
 ### ARIA Attributes
+
 - Components must include proper ARIA labels and roles
 - Keyboard navigation support for all interactive elements
 - Focus management for dynamic content updates
 - Screen reader compatibility for all UI elements
 
 ### Semantic HTML
+
 - Use proper HTML elements for their intended purpose
 - Maintain proper heading hierarchy
 - Include alt text for images

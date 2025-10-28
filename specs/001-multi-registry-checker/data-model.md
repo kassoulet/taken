@@ -3,10 +3,11 @@
 ## Core Entities
 
 ### PackageName
+
 - **Description**: The identifier entered by the user to check across registries
 - **Type**: String
 - **Format**: Alphanumeric characters, hyphens, underscores, dots, and @ (for scoped npm packages)
-- **Validation**: 
+- **Validation**:
   - Length: 1-214 characters (npm maximum)
   - Pattern: /^[a-zA-Z0-9-_@./]+$/ (with registry-specific variations)
   - Additional registry-specific validation applied per registry rules
@@ -15,6 +16,7 @@
 - **Immutability**: Input string is not modified after validation
 
 ### Registry
+
 - **Description**: An external package registry that supports package name lookup
 - **Properties**:
   - id (string): Unique identifier (e.g., "npm", "pypi", "cargo", "github")
@@ -23,12 +25,13 @@
   - validateFn (function): Function to validate package names per registry rules
   - docUrl (string): Documentation URL for the registry
 - **Relationships**: One-to-many with RegistryStatus
-- **Constraints**: 
+- **Constraints**:
   - id must be unique
   - apiEndpoint must be a valid URL pattern
   - validateFn must be a defined function
 
 ### RegistryStatus
+
 - **Description**: The result for a specific package name on a specific registry
 - **Properties**:
   - registry (Registry): The registry the status is for
@@ -45,6 +48,7 @@
 - **State transitions**: pending → checked → result available
 
 ### CachedQuery
+
 - **Description**: A stored result from a previous query with timestamp for tracking
 - **Properties**:
   - packageName (PackageName): The package name that was checked
@@ -68,25 +72,27 @@ CachedQuery "1" -- "*" RegistryStatus
 ## State Diagrams
 
 ### Registry Check Process
+
 ```
-[User Input] 
+[User Input]
     ↓ (validated and sanitized)
 [Package Name Ready]
     ↓ (query initiated)
-[Query in Progress] 
+[Query in Progress]
     ↓ (parallel requests to registries)
-[Results Received] 
+[Results Received]
     ↓ (cached in sessionStorage)
-[Display Results] 
+[Display Results]
     ↓ (status: available/taken/error)
 [Results Displayed]
 ```
 
 ### Input Validation Process
+
 ```
-[Raw User Input] 
+[Raw User Input]
     ↓ (real-time validation with character filtering)
-[Character Filtered/Rejected] 
+[Character Filtered/Rejected]
     ↓ (if valid character passes)
 [Input Updated]
     ↓ (if invalid character)

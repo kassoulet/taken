@@ -9,6 +9,7 @@
 **Description**: Checks the availability of a package name across multiple registries
 
 **Parameters**:
+
 - packageName (string): The package name to check across registries
 - options (object, optional):
   - timeout (number): Timeout for each registry request in milliseconds (default: 10000)
@@ -17,6 +18,7 @@
 **Returns**: Promise<RegistryCheckResult[]>
 
 **Response Format**:
+
 ```javascript
 [
   {
@@ -38,11 +40,13 @@
 **Description**: Validates a package name according to each registry's specific rules
 
 **Parameters**:
+
 - packageName (string): The package name to validate
 
 **Returns**: Promise<ValidationResult>
 
 **Response Format**:
+
 ```javascript
 {
   packageName: string,      // The package name that was validated
@@ -62,11 +66,13 @@
 **Description**: Retrieves a cached result for a package name if it exists in sessionStorage
 
 **Parameters**:
+
 - packageName (string): The package name to check in cache
 
 **Returns**: Promise<RegistryCheckResult[] | null>
 
 **Response Format**:
+
 - Returns the same as checkPackageName if found in cache
 - Returns null if not found in cache
 
@@ -75,6 +81,7 @@
 **Description**: Caches a result in sessionStorage for future use
 
 **Parameters**:
+
 - packageName (string): The package name that was checked
 - results (RegistryCheckResult[]): The results to cache
 
@@ -114,12 +121,14 @@ The service will make GET requests to these endpoints:
 The service expects these response structures:
 
 ### 200 Success Response
+
 - npm: JSON object containing package information
 - PyPI: JSON object containing project information
 - Cargo: JSON object containing crate information
 - GitHub: JSON object containing repository information
 
 ### 404 Not Found Response
+
 - All registries return 404 when a package name is not found
 
 ## Browser Storage Contract

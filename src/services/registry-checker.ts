@@ -93,16 +93,20 @@ export const getRegistryStatus = async (
     }
 
     // Sanitize response data before processing
-    let details = undefined;
+    let details: object | undefined = undefined;
     // Only try to parse JSON for successful responses or for specific error cases where JSON might be returned
     if (response.ok || response.status === 404) {
       try {
         // Clone the response to be able to read the body multiple times if needed
         const clonedResponse = response.clone();
         const rawData = await clonedResponse.json();
-        details = sanitizeResponse(rawData);
+        const sanitizedData = sanitizeResponse(rawData);
+        details =
+          typeof sanitizedData === "object" && sanitizedData !== null
+            ? (sanitizedData as object)
+            : undefined;
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch (e: unknown) {
+      } catch (e) {
         // If JSON parsing fails, we still have the status
       }
     }
@@ -191,20 +195,46 @@ const extractPackageInfo = (
       // NPM package information extraction
       const npmDetails = details as {
         "dist-tags"?: { latest?: string };
-        versions?: Record<string, any>;
+        versions?: Record<
+          string,
+          {
+            description?: string;
+            author?: { name?: string } | string;
+            license?: string;
+            dependencies?: Record<string, string>;
+          }
+        >;
         time?: Record<string, string>;
       };
 
       if (npmDetails) {
         const latestVersion = npmDetails["dist-tags"]?.latest;
-        const versionData = npmDetails.versions?.[latestVersion];
+        const versionData =
+          latestVersion && npmDetails.versions
+            ? (npmDetails.versions[latestVersion] as {
+                description?: string;
+                author?: { name?: string } | string;
+                license?: string;
+                dependencies?: Record<string, string>;
+              })
+            : undefined;
 
         if (versionData) {
           packageInfo.version = latestVersion;
           packageInfo.description = versionData.description;
-          packageInfo.author = versionData.author?.name || versionData.author;
+          packageInfo.author =
+            typeof versionData.author === "object" &&
+            versionData.author &&
+            "name" in versionData.author
+              ? (versionData.author as { name?: string }).name
+              : typeof versionData.author === "string"
+                ? versionData.author
+                : undefined;
           packageInfo.license = versionData.license;
-          packageInfo.lastUpdated = npmDetails.time?.[latestVersion];
+          packageInfo.lastUpdated =
+            latestVersion && npmDetails.time
+              ? npmDetails.time[latestVersion]
+              : undefined;
           packageInfo.publishDate = npmDetails.time?.created;
           packageInfo.tags = Object.keys(npmDetails["dist-tags"] || {});
           packageInfo.dependencies = versionData.dependencies || {};

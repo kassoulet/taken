@@ -1,7 +1,7 @@
-import { useState, useCallback } from 'react';
-import { checkPackageName, RegistryStatus } from '../services/registry-checker';
-import { getCachedResult, cacheResult } from '../services/cache-manager';
-import { sanitizeInput } from '../utils/sanitizer';
+import { useState, useCallback } from "react";
+import { checkPackageName, RegistryStatus } from "../services/registry-checker";
+import { getCachedResult, cacheResult } from "../services/cache-manager";
+import { sanitizeInput } from "../utils/sanitizer";
 
 // Options for the hook
 interface UseRegistryCheckerOptions {
@@ -19,7 +19,7 @@ interface UseRegistryCheckerReturn {
 }
 
 export const useRegistryChecker = (
-  options: UseRegistryCheckerOptions = {}
+  options: UseRegistryCheckerOptions = {},
 ): UseRegistryCheckerReturn => {
   const { enableCache = true } = options;
   const [results, setResults] = useState<RegistryStatus[] | null>(null);
@@ -33,7 +33,7 @@ export const useRegistryChecker = (
       const sanitizedPackageName = sanitizeInput(packageName);
 
       if (!sanitizedPackageName) {
-        setError('Package name is required');
+        setError("Package name is required");
         setResults(null);
         return;
       }
@@ -63,14 +63,19 @@ export const useRegistryChecker = (
         // Update state with results
         setResults(registryResults);
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'An error occurred while checking package name';
-        setError(errorMessage || 'An error occurred while checking package name');
+        const errorMessage =
+          err instanceof Error
+            ? err.message
+            : "An error occurred while checking package name";
+        setError(
+          errorMessage || "An error occurred while checking package name",
+        );
         setResults(null);
       } finally {
         setLoading(false);
       }
     },
-    [enableCache]
+    [enableCache],
   ); // Only depend on enableCache since other values are function parameters
 
   // Function to clear results

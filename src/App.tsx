@@ -1,33 +1,34 @@
-import { useState, useEffect, useCallback } from 'react';
-import NameInput from './components/NameInput/NameInput';
-import RegistryStatusGrid from './components/RegistryStatusGrid/RegistryStatusGrid';
-import { useRegistryChecker } from './hooks/useRegistryChecker';
-import { RegistryStatus } from './services/registry-checker';
+import { useState, useEffect, useCallback } from "react";
+import NameInput from "./components/NameInput/NameInput";
+import RegistryStatusGrid from "./components/RegistryStatusGrid/RegistryStatusGrid";
+import { useRegistryChecker } from "./hooks/useRegistryChecker";
+import { RegistryStatus } from "./services/registry-checker";
 
 function App() {
-  const [packageName, setPackageName] = useState<string>('');
+  const [packageName, setPackageName] = useState<string>("");
   const [darkMode, setDarkMode] = useState<boolean>(false);
-  const { results, loading, error, checkPackage, clearResults } = useRegistryChecker();
+  const { results, loading, error, checkPackage, clearResults } =
+    useRegistryChecker();
 
   useEffect(() => {
     // Check system preference for dark mode
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     setDarkMode(mediaQuery.matches);
 
     // Set up listener for changes to system preference
     const handler = (e: MediaQueryListEvent) => setDarkMode(e.matches);
-    mediaQuery.addEventListener('change', handler);
+    mediaQuery.addEventListener("change", handler);
 
     // Clean up listener
-    return () => mediaQuery.removeEventListener('change', handler);
+    return () => mediaQuery.removeEventListener("change", handler);
   }, []);
 
   // Apply dark mode class to document
   useEffect(() => {
     if (darkMode) {
-      document.documentElement.classList.add('dark');
+      document.documentElement.classList.add("dark");
     } else {
-      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.remove("dark");
     }
   }, [darkMode]);
 
@@ -51,7 +52,7 @@ function App() {
         clearResults();
       }
     },
-    [checkPackage, clearResults]
+    [checkPackage, clearResults],
   );
 
   // Update the onRetry function to use useCallback to prevent stale closures
@@ -59,7 +60,7 @@ function App() {
     (packageName: string) => {
       checkPackage(packageName);
     },
-    [checkPackage]
+    [checkPackage],
   );
 
   return (
@@ -104,7 +105,8 @@ function App() {
         {!results && !loading && !error && (
           <div className="mt-12 text-center text-gray-500 dark:text-gray-400">
             <p className="font-body">
-              Enter a package name above to check its availability across registries
+              Enter a package name above to check its availability across
+              registries
             </p>
             <div className="mt-8 grid grid-cols-2 md:grid-cols-3 gap-4">
               <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 min-w-[120px] transition-colors duration-300">
@@ -126,6 +128,21 @@ function App() {
           </div>
         )}
       </div>
+      
+      {/* Footer with credits */}
+      <footer className="py-6 text-center text-gray-600 dark:text-gray-400 text-sm">
+        <p>
+          Created by{" "}
+          <a 
+            href="https://github.com/kassoulet/taken" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            Gautier Portet
+          </a>
+        </p>
+      </footer>
     </div>
   );
 }

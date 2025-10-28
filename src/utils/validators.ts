@@ -10,8 +10,8 @@ export const validateNpmPackageName = (packageName: string): boolean => {
   }
 
   // Check if it's a scoped package (@scope/name)
-  if (packageName.startsWith('@')) {
-    const parts = packageName.split('/');
+  if (packageName.startsWith("@")) {
+    const parts = packageName.split("/");
     if (parts.length !== 2) {
       return false;
     }
@@ -19,7 +19,7 @@ export const validateNpmPackageName = (packageName: string): boolean => {
     const [scope, name] = parts;
 
     // Validate scope: @ + valid name
-    if (!scope.startsWith('@') || !validateNpmPackageName(scope.substring(1))) {
+    if (!scope.startsWith("@") || !validateNpmPackageName(scope.substring(1))) {
       return false;
     }
 
@@ -28,7 +28,7 @@ export const validateNpmPackageName = (packageName: string): boolean => {
   }
 
   // Regular package name validation
-  if (packageName.startsWith('.') || packageName.startsWith('_')) {
+  if (packageName.startsWith(".") || packageName.startsWith("_") || /^\d/.test(packageName)) {
     return false;
   }
 
@@ -63,12 +63,12 @@ export const validateCargoPackageName = (packageName: string): boolean => {
     return false;
   }
 
-  if (packageName.startsWith('-')) {
+  if (packageName.startsWith("-")) {
     return false;
   }
 
-  // Check for valid characters (letters, numbers, hyphens, underscores)
-  const validCharsRegex = /^[a-z0-9][a-z0-9_-]*$/;
+  // Check for valid characters (letters, numbers, hyphens - no underscores for Cargo)
+  const validCharsRegex = /^[a-z0-9][a-z0-9-]*$/;
   return validCharsRegex.test(packageName);
 };
 
@@ -82,7 +82,7 @@ export const validateGithubRepoName = (repoName: string): boolean => {
     return false;
   }
 
-  const parts = repoName.split('/');
+  const parts = repoName.split("/");
   if (parts.length !== 2) {
     return false; // Must be in owner/repo format
   }
@@ -99,7 +99,12 @@ const validateGithubNamePart = (part: string): boolean => {
   }
 
   // Cannot start or end with hyphen or dot
-  if (part.startsWith('-') || part.startsWith('.') || part.endsWith('-') || part.endsWith('.')) {
+  if (
+    part.startsWith("-") ||
+    part.startsWith(".") ||
+    part.endsWith("-") ||
+    part.endsWith(".")
+  ) {
     return false;
   }
 
@@ -135,40 +140,48 @@ export interface RegistryValidationResult {
 // Overload the function to handle different return types
 export function validatePackageName(
   packageName: string,
-  registryId?: string
+  registryId?: string,
 ): ValidationResult | RegistryValidationResult {
   const timestamp = new Date().toISOString();
 
   if (registryId) {
     // Validate against specific registry
     switch (registryId) {
-      case 'npm':
+      case "npm":
         return {
           packageName,
           registryId,
           isValid: validateNpmPackageName(packageName),
-          errors: validateNpmPackageName(packageName) ? undefined : ['Invalid npm package name format'],
+          errors: validateNpmPackageName(packageName)
+            ? undefined
+            : ["Invalid npm package name format"],
         };
-      case 'pypi':
+      case "pypi":
         return {
           packageName,
           registryId,
           isValid: validatePypiPackageName(packageName),
-          errors: validatePypiPackageName(packageName) ? undefined : ['Invalid PyPI package name format'],
+          errors: validatePypiPackageName(packageName)
+            ? undefined
+            : ["Invalid PyPI package name format"],
         };
-      case 'cargo':
+      case "cargo":
         return {
           packageName,
           registryId,
           isValid: validateCargoPackageName(packageName),
-          errors: validateCargoPackageName(packageName) ? undefined : ['Invalid Cargo package name format'],
+          errors: validateCargoPackageName(packageName)
+            ? undefined
+            : ["Invalid Cargo package name format"],
         };
-      case 'github':
+      case "github":
         return {
           packageName,
           registryId,
           isValid: validateGithubRepoName(packageName),
-          errors: validateGithubRepoName(packageName) ? undefined : ['Invalid GitHub repository name format'],
+          errors: validateGithubRepoName(packageName)
+            ? undefined
+            : ["Invalid GitHub repository name format"],
         };
       default:
         return {
@@ -191,19 +204,23 @@ export function validatePackageName(
       validationByRegistry: {
         npm: {
           isValid: npmValid,
-          errors: npmValid ? undefined : ['Invalid npm package name format'],
+          errors: npmValid ? undefined : ["Invalid npm package name format"],
         },
         pypi: {
           isValid: pypiValid,
-          errors: pypiValid ? undefined : ['Invalid PyPI package name format'],
+          errors: pypiValid ? undefined : ["Invalid PyPI package name format"],
         },
         cargo: {
           isValid: cargoValid,
-          errors: cargoValid ? undefined : ['Invalid Cargo package name format'],
+          errors: cargoValid
+            ? undefined
+            : ["Invalid Cargo package name format"],
         },
         github: {
           isValid: githubValid,
-          errors: githubValid ? undefined : ['Invalid GitHub repository name format'],
+          errors: githubValid
+            ? undefined
+            : ["Invalid GitHub repository name format"],
         },
       },
       timestamp,
