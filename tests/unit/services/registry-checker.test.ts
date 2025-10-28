@@ -4,6 +4,12 @@ import {
 } from "../../../src/services/registry-checker";
 import { vi } from "vitest";
 
+interface Registry {
+  id: string;
+  name: string;
+  apiEndpoint: string;
+}
+
 // Mock fetch
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
@@ -21,11 +27,11 @@ describe("registry-checker", () => {
         json: async () => ({ name: "example-package" }),
       } as Response);
 
-      const registry = {
+      const registry: Registry = {
         id: "npm",
         name: "npm",
         apiEndpoint: "https://registry.npmjs.org/",
-      } as any;
+      };
       const result = await getRegistryStatus(registry, "example-package");
 
       expect(result.status).toBe("taken");
@@ -40,11 +46,11 @@ describe("registry-checker", () => {
         json: async () => ({ error: "Not found" }),
       } as Response);
 
-      const registry = {
+      const registry: Registry = {
         id: "npm",
         name: "npm",
         apiEndpoint: "https://registry.npmjs.org/",
-      } as any;
+      };
       const result = await getRegistryStatus(registry, "nonexistent-package");
 
       expect(result.status).toBe("available");
@@ -57,11 +63,11 @@ describe("registry-checker", () => {
         json: async () => ({ error: "Server error" }),
       } as Response);
 
-      const registry = {
+      const registry: Registry = {
         id: "npm",
         name: "npm",
         apiEndpoint: "https://registry.npmjs.org/",
-      } as any;
+      };
       const result = await getRegistryStatus(registry, "problematic-package");
 
       expect(result.status).toBe("error");
@@ -77,11 +83,11 @@ describe("registry-checker", () => {
         });
       });
 
-      const registry = {
+      const registry: Registry = {
         id: "npm",
         name: "npm",
         apiEndpoint: "https://registry.npmjs.org/",
-      } as any;
+      };
 
       const result = await getRegistryStatus(registry, "test-package", 500);
 

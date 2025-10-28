@@ -1,8 +1,4 @@
-import {
-  sanitizeInput,
-  sanitizeResponse,
-  sanitizePackageName,
-} from "../../../src/utils/sanitizer";
+import { sanitizeInput, sanitizeResponse } from "../../../src/utils/sanitizer";
 
 describe("sanitizer", () => {
   describe("sanitizeInput", () => {
