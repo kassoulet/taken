@@ -189,6 +189,38 @@ All registry requests have a 10-second timeout as specified:
 const DEFAULT_TIMEOUT = 10000; // 10 seconds per clarification
 ```
 
+### Vite Configuration for GitHub Pages
+
+The Vite configuration has been updated to properly handle deployment to GitHub Pages under a subdirectory:
+
+```javascript
+import { defineConfig, loadEnv } from "vite";
+import react from "@vitejs/plugin-react";
+
+// https://vitejs.dev/config/
+export default defineConfig(({ mode }) => {
+  // Load environment variables
+  const env = loadEnv(mode, process.cwd(), "");
+
+  // Set base path conditionally
+  // Use /taken/ for GitHub Pages deployment, but fallback to root for local dev
+  const isGitHubPages = env.VITE_GITHUB_PAGES === "true";
+  const base = isGitHubPages ? "/taken/" : "/";
+
+  return {
+    base,
+    plugins: [react()],
+    server: {
+      open: true,
+    },
+  };
+});
+```
+
+This ensures that asset paths are correctly resolved both during local development and when deployed to GitHub Pages at `https://kassoulet.github.io/taken/`.
+
+````
+
 ## Security Implementation
 
 ### Input Sanitization
@@ -204,7 +236,7 @@ export function sanitizeInput(input) {
     ALLOWED_ATTR: [], // No attributes allowed
   });
 }
-```
+````
 
 ### XSS Prevention
 
@@ -271,7 +303,15 @@ tests/
    The application can be deployed as a static site to any hosting provider (Netlify, Vercel, GitHub Pages, etc.)
 
 3. **GitHub Pages specific configuration**
-   For GitHub Pages deployment, static assets can be placed in the `public/assets/` directory. These will be copied to the `dist/assets/` directory during the build process and will be accessible at `https://<username>.github.io/<repository>/assets/`.
+   For GitHub Pages deployment under a subdirectory (e.g., `https://kassoulet.github.io/taken/`), the build process sets the `VITE_GITHUB_PAGES=true` environment variable during the GitHub Actions workflow, which configures Vite to use the correct base path.
+
+   For local testing of the GitHub Pages build:
+
+   ```bash
+   VITE_GITHUB_PAGES=true npm run build
+   ```
+
+   Static assets can be placed in the `public/assets/` directory. These will be copied to the `dist/assets/` directory during the build process and will be accessible at `https://kassoulet.github.io/taken/assets/`.
 
 ## Development Guidelines
 
