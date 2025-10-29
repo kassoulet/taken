@@ -102,3 +102,7 @@ Thumbs.db
 # Test results and reports
 test-results/
 playwright-report/
+
+# AI Files
+.specify
+.qwen/commands

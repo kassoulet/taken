@@ -31,7 +31,6 @@
    ```
 
 4. **Configure TailwindCSS**
-
    - Update `tailwind.config.js`:
 
    ```js
@@ -58,6 +57,8 @@
 ```
 multi-registry-checker/
 ├── public/
+│   ├── assets/
+│   └── ...
 ├── src/
 │   ├── components/
 │   │   ├── NameInput/
@@ -268,6 +269,9 @@ tests/
 
 2. **Serve the `dist` folder**
    The application can be deployed as a static site to any hosting provider (Netlify, Vercel, GitHub Pages, etc.)
+
+3. **GitHub Pages specific configuration**
+   For GitHub Pages deployment, static assets can be placed in the `public/assets/` directory. These will be copied to the `dist/assets/` directory during the build process and will be accessible at `https://<username>.github.io/<repository>/assets/`.
 
 ## Development Guidelines
 

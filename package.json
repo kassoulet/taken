@@ -20,12 +20,9 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
+      "eslint --fix"
     ],
-    "*.{json,md,yml,yaml}": [
-      "prettier --write"
-    ]
+    "*.{json,md,yml,yaml}": []
   },
   "dependencies": {
     "dompurify": "^3.0.5",
